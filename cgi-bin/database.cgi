@@ -19,26 +19,64 @@ cat << EOF
 <table id="para" cellspacing="20">
 	<tr>
 		<td>
-			POST: <form action="http://bp:8080/cgi-bin/database.cgi" method="post">
-			<input type="text" name="fornavn">
-			<input type="submit">
+			Finn forfatter: <form action="http://bp:8080/cgi-bin/database.cgi" method="get">
+			<input type="text" placeholder="Fornavn" name="fornavn">
+			<input type="text" placeholder="Etternavn" name="etternavn">
+			<input type="text" placeholder="Norge" name="nasjonalitet">
+			<input type="radio" name="forfatter" value="en" checked >En forfatter<br>
+			<input type="radio" name="forfatter" value="alle" >Alle forfattere<br>
+			<input type="submit" value="s&oslash;k">
+			</form>
+		
+		</td>
+		<td>
+			Finn bok: <form action="http://bp:8080/cgi-bin/database.cgi" method="get">
+			<input type="text" placeholder="Tittel" name="tittel">
+			<input type="text" placeholder="Bok ID" name="id">
+			<input type="radio" name="bok" value="en" checked >En bok<br>
+			<input type="radio" name="bok" value="alle" >Alle b&oslash;ker<br>
+			<input type="submit" value="s&oslash;k">
+			</form>
+</form>
+		</td>
+	</tr>
+
+	<tr>
+			<td>
+				<form action="http://bp:8080/cgi-bin/database.cgi" method="post">
+				<input type="text" placeholder="Fornavn" name="fornavn">
+				<input type="text" placeholder="Etternavn" name="etternavn">
+				<input type="text" placeholder="Norge" name="nasjonalitet">
+				<input type="radio" name="forfatter" value="en" checked >En forfatter<br>
+				<input type="radio" name="forfatter" value="alle" >Alle forfattere<br>
+				<input type="submit" name="add" value="legg til">
+				<input type="submit" name="update" value="Endre">
+				<input type="submit" name="delete" value="Slette">
 			</form>
 		</td>
 
 		<td>
-			GET Author: <form action="http://bp:8080/cgi-bin/database.cgi" method="get">
-			<input type="text" placeholder="Fornavn" name="fornavn">
-			<input type="text" placeholder="Etternavn" name="etternavn">
-			<input type="submit" value="s&oslash;k">
-		</form>
-		</td>
+				<form action="http://bp:8080/cgi-bin/database.cgi" method="post">
+				<input type="text" placeholder="Tittel" name="tittel">
+				<input type="text" placeholder="Bok ID" name="id">
+				<input type="radio" name="bok" value="en" checked >En bok<br>
+				<input type="radio" name="bok" value="alle" >Alle b&oslash;ker<br>
+				<input type="submit" name="add" value="legg til">
+				<input type="submit" name="update" value="Endre">
+				<input type="submit" name="delete" value="Slette">
+		</td>	
 	</tr>
-</table>	
+</table>
+
+Variabelen QUERY_STRING: $QUERY_STRING
+
 </center>
 </body></html>
 EOF
 fi
 
 if [ $REQUEST_METHOD == POST ]
-	echo "POST"
+	if [ "$CONTENT_LENGTH" -gt 0 ]; then
+        	read -n $CONTENT_LENGTH QUERY_STRING <&0
+    	fi
 fi
