@@ -10,6 +10,6 @@ COPY ./httpd.conf /usr/local/apache2/conf/httpd.conf
 RUN chown -R www-data:www-data /usr/local/apache2/cgi-bin/
 RUN chmod -R 755 /usr/local/apache2/cgi-bin/
 
-#CMD apachectl -D FOREGROUND
-#ENTRYPOINT ["apachectl"]
+CMD apachectl -D FOREGROUND
+#ENTRYPOINT ["apachectl", "start"]
 

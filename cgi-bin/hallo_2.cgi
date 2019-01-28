@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ $QUERY_STRING != null  ]
+if [ $REQUEST_METHOD == GET  ]
 then
 
 echo "Content-type:text/html;charset=utf-8"
@@ -21,8 +21,11 @@ cat << EOF
 EOF
 
 else
-	STDIN=$(cat) >> $QUERY_STRING
- echo "Content-type:text/html;charset=utf-8"
+	if [ "$CONTENT_LENGTH" -gt 0 ]; then
+        	read -n $CONTENT_LENGTH POST_DATA <&0
+    	fi
+ 
+	echo "Content-type:text/html;charset=utf-8"
 echo
 
 cat << EOF
@@ -33,7 +36,7 @@ cat << EOF
   <title>Hallo_3</title>
  </head>
  <body>
-  Variabelen QUERY_STRING: STDIN=$(cat)
+  Variabelen QUERY_STRING: $POST_DATA
  </body>
 </html>  
 EOF
