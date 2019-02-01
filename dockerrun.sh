@@ -5,4 +5,4 @@
 #The best would be to run --cap-drop ALL and --cap-add "Needed capabilities"
 
 docker build -t $1/cgiserver .
-docker run -v cgi-bin:/usr/local/apache2/cgi-bin/ -d --rm --name cgiserver -p 8080:80 $1/cgiserver
+docker run -v cgi-bin:/usr/local/apache2/cgi-bin/ -it --rm --name cgiserver -p 8080:80 --network=mynet $1/cgiserver /bin/bash
