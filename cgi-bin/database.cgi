@@ -75,8 +75,74 @@ Variabelen QUERY_STRING: $QUERY_STRING
 EOF
 fi
 
-if [ $REQUEST_METHOD == POST ]
-	if [ "$CONTENT_LENGTH" -gt 0 ]; then
-        	read -n $CONTENT_LENGTH QUERY_STRING <&0
-    	fi
+if [ "$REQUEST_METHOD" = "POST" ]; then
+  if [ "$CONTENT_LENGTH" -gt 0 ]; then
+      read -n $CONTENT_LENGTH POST_DATA <&0
+  fi
+fi
+
+#IFS='&'
+#set -- $POST_DATA
+tabell=$(echo $POST_DATA | cut -d'&' -f4)
+
+if [[ $tabell == *"forfatter"* && $POST_DATA == *"add=legg+til"* ]];
+then
+	fnavn=$(echo $POST_DATA | cut -d'&' -f1)
+	enavn=$(echo $POST_DATA | cut -d'&' -f2)
+	nasjonalitet=$(echo $POST_DATA | cut -d'&' -f3)
+	xml=""
+	echo "Content-type: text/html"
+	echo ""
+	echo "<html><head><title>Legg til forfatter</title>"
+	echo "<link rel="stylesheet" type="text/css" href="http://bp/styles.css">"
+	echo "</head><body>"
+	echo "Data received: $POST_DATA</br>"
+	echo "XML: <xml Id = Forfatter add><root>"
+	echo "<forfatter>"
+	echo "<fnavn>$fnavn</fnavn><enavn>$enavn</enavn><nat>$nasjonalitet</nat></forfatter></root></xml></br>"
+	echo "Tabell er: $tabell</br>"
+	echo "Fornavn: $fnavn</br>"
+        echo "Etternavn: $enavn</br>"
+        echo "Nasjonalitet: $nasjonalitet</br>"
+	echo "</body></html>"
+
+elif [[ $tabell == *"forfatter"* && $POST_DATA == *"update=Endre"* ]];
+then
+	echo "Content-type: text/html"
+	echo ""
+	echo "<html><head><title>Endre en forfatter</title>"
+	echo "<link rel="stylesheet" type="text/css" href="http://bp/styles.css">"
+	echo"</head><body>"
+	echo "Data received: $POST_DATA"
+	echo "Tabell er: $tabell</br>"
+	echo "Fornavn: $fnavn</br>"
+        echo "Etternavn: $enavn</br>"
+        echo "Nasjonalitet: $nasjonalitet</br>"
+	echo "</body></html>"
+
+elif [[ $tabell == *"forfatter"* && $POST_DATA == *"delete=Slette"* ]];
+then
+	echo "Content-type: text/html"
+	echo ""
+	echo "<html><head><title>Slette en forfatter</title>"
+	echo "<link rel="stylesheet" type="text/css" href="http://bp/styles.css">"
+	echo"</head><body>"
+	echo "Data received: $POST_DATA"
+	echo "Tabell er: $tabell</br>"
+	echo "Fornavn: $fnavn</br>"
+        echo "Etternavn: $enavn</br>"
+        echo "Nasjonalitet: $nasjonalitet</br>"
+	echo "</body></html>"
+
+
+else
+        echo "Content-type: text/html"
+	echo ""
+	echo "<html><head><title>Bok</title>"
+	echo "<link rel="stylesheet" type="text/css" href="http://bp/styles.css">"
+	echo "</head><body>"
+	echo "Data received: $POST_DATA"
+	echo "Dette skal vaere bok"
+	echo "Tabell er: $tabell"
+	echo "</body></html>"
 fi
