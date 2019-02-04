@@ -63,6 +63,8 @@ then
 			resp=$(curl -X GET http://nodeserver:8888/forfatter/ | xmlstarlet format --indent-tab)
 			echo "$resp </pre>"
 		fi
+	fi
+
 	if [ $type == bokID ]
 	then
 		echo "Type: $type og mengde: $mengde ID: $id" 
