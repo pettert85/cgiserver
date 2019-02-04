@@ -27,18 +27,20 @@ cat << EOF
 			<input type="submit" value="Hent en" name="en">
 			<input type="submit" value="Hent alle" name="alle">
 			</form></td>
-			
+
 </tr>
 <tr>
 		<td>
 			 Endre/legg til/slett forfatter: <form method="post">
+			<input type="text" placeholder="ID" name="forfatterID">
 			<input type="text" placeholder="Fornavn" name="fornavn">
 			<input type="text" placeholder="Etternavn" name="etternavn">
 			<input type="text" placeholder="NOR" name="najonalitet">
 			<input type="submit" value="Legg til" name="POST">
 			<input type="submit" value="Endre" name="PUT">
 			<input type="submit" value="Slett" name="DELETE">
-			</form></td></tr>
+			</form></td>
+<td>&nbsp;</td></tr>
 
 </table>
 EOF
@@ -64,7 +66,6 @@ then
 			echo "$resp </pre>"
 		fi
 	fi
-
 	if [ $type == bokID ]
 	then
 		echo "Type: $type og mengde: $mengde ID: $id" 
@@ -78,15 +79,14 @@ then
 			resp=$(curl -X GET http://nodeserver:8888/bok/ | xmlstarlet format --indent-tab)
 			echo "$resp </pre>"
 		fi
-	
-			
-else
+	fi
+	else
 		echo "Velg å hente data om en forfatter eller en bok. Du kan også oppdatere og slette eksisterende data! "
-		
+
 	fi
 
 	echo $req
-	
+
 fi
 
 
@@ -95,27 +95,28 @@ if [ "$REQUEST_METHOD" = "POST" ]; then
       read -n $CONTENT_LENGTH POST_DATA <&0
   fi
 fi
-echo $POST_DATA
-#IFS='&'
-#set -- $POST_DATA
-#tabell=$(echo $POST_DATA | cut -d'&' -f1)
-#echo $tabell
+
+
 if [[ $POST_DATA == *"fornavn"* && $POST_DATA == *"POST"*  ]];
 then
-	fnavn=$(echo $POST_DATA | cut -d'&' -f1)
-	enavn=$(echo $POST_DATA | cut -d'&' -f2)
-	nasjonalitet=$(echo $POST_DATA | cut -d'&' -f3)
-	httpMethod=$(echo $POST_DATA | cut -d'&' -f4 | cut -d'=')
-	xml=$(echo "<forfatterliste><forfatter><fornavn>$fnavn</fornavn> \
-	<etternavn>$enavn</etternavn><nasjonalitet>$nasjonalitet</nasjonalitet> \
-	</forfatter></forfatterliste>")
-	echo "Data received: $POST_DATA</br>"
-	echo "XML: $xml"
-	echo "Tabell er: $tabell</br>"
-	echo "Fornavn: $fnavn</br>"
-        echo "Etternavn: $enavn</br>"
-        echo "Nasjonalitet: $nasjonalitet</br>"
+	fId=$(echo $POST_DATA | cut -d'&' -f1 | cut -d'=' -f2)
+	fnavn=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2)
+	enavn=$(echo $POST_DATA | cut -d'&' -f3 | cut -d'=' -f2)
+	nasjonalitet=$(echo $POST_DATA | cut -d'&' -f4 | cut -d'=' -f2)
+	httpMethod=$(echo $POST_DATA | cut -d'&' -f5 | cut -d'=' -f1)
 
+	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><forfatter><forfatterID>$fId</forfatterID>\
+<fornavn>$fnavn</fornavn><etternavn>$enavn</etternavn><nasjonalitet>$nasjonalitet</nasjonalitet></forfatter>")
+
+	resp=$(curl -X POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
+	echo $resp
+#	echo "Data received: $POST_DATA</br>"
+#	echo "XML: $xml"
+#	echo "ForfatterID: $fId</br>"
+#	echo "Fornavn: $fnavn</br>"
+#       echo "Etternavn: $enavn</br>"
+#       echo "Nasjonalitet: $nasjonalitet</br>"
+#       echo "HTTP Method: $httpMethod</br>"
 
 elif [[ $POST_DATA == *"forfatter"* && $POST_DATA == *"update=Endre"* ]];
 then
