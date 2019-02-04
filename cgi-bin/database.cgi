@@ -2,9 +2,6 @@
 echo "Content-type:text/html;charset=utf-8"
 echo
 
-if [ $REQUEST_METHOD == GET ]
-then
-
 cat << EOF
 <html>
 
@@ -19,61 +16,45 @@ cat << EOF
 <table id="para" cellspacing="20">
 	<tr>
 		<td>
-			Finn forfatter: <form action="http://bp:8080/cgi-bin/database.cgi" method="get">
-			<input type="text" placeholder="Fornavn" name="fornavn">
-			<input type="text" placeholder="Etternavn" name="etternavn">
-			<input type="text" placeholder="Norge" name="nasjonalitet">
-			<input type="radio" name="forfatter" value="en" checked >En forfatter<br>
-			<input type="radio" name="forfatter" value="alle" >Alle forfattere<br>
-			<input type="submit" value="s&oslash;k">
-			</form>
-		
-		</td>
-		<td>
-			Finn bok: <form action="http://bp:8080/cgi-bin/database.cgi" method="get">
-			<input type="text" placeholder="Tittel" name="tittel">
-			<input type="text" placeholder="Bok ID" name="id">
-			<input type="radio" name="bok" value="en" checked >En bok<br>
-			<input type="radio" name="bok" value="alle" >Alle b&oslash;ker<br>
-			<input type="submit" value="s&oslash;k">
-			</form>
-</form>
-		</td>
-	</tr>
+			Hent en forfatter: <form method="get">
+			<input type="text" placeholder="ID" name="forfatterID">
+			<input type="submit" value="Hent en" name="en">
+			<input type="submit" value="Hent alle" name="alle">
+			</form></td></tr>
 
-	<tr>
-			<td>
-				<form action="http://bp:8080/cgi-bin/database.cgi" method="post">
-				<input type="text" placeholder="Fornavn" name="fornavn">
-				<input type="text" placeholder="Etternavn" name="etternavn">
-				<input type="text" placeholder="Norge" name="nasjonalitet">
-				<input type="radio" name="forfatter" value="en" checked >En forfatter<br>
-				<input type="radio" name="forfatter" value="alle" >Alle forfattere<br>
-				<input type="submit" name="add" value="legg til">
-				<input type="submit" name="update" value="Endre">
-				<input type="submit" name="delete" value="Slette">
-			</form>
-		</td>
-
-		<td>
-				<form action="http://bp:8080/cgi-bin/database.cgi" method="post">
-				<input type="text" placeholder="Tittel" name="tittel">
-				<input type="text" placeholder="Bok ID" name="id">
-				<input type="radio" name="bok" value="en" checked >En bok<br>
-				<input type="radio" name="bok" value="alle" >Alle b&oslash;ker<br>
-				<input type="submit" name="add" value="legg til">
-				<input type="submit" name="update" value="Endre">
-				<input type="submit" name="delete" value="Slette">
-		</td>	
-	</tr>
 </table>
-
-Variabelen QUERY_STRING: $QUERY_STRING
-
-</center>
-</body></html>
 EOF
+
+if [ $REQUEST_METHOD == GET ]
+then	
+	type=$(echo $QUERY_STRING | cut -d "=" -f1)
+	
+	mengde=$(echo $QUERY_STRING | cut -d "=" -f2 | cut -d "&" -f2)
+	id=$(echo $QUERY_STRING | cut -d "=" -f2 | cut -d "&" -f1)
+
+	if [ $type == forfatterID ]
+	then
+		echo "Type: $type og mengde: $mengde ID: $id" 
+		if [ $mengde == en ]
+		then
+			echo "<pre>"
+			resp=$(curl -X GET http://nodeserver:8888/forfatter/$id | xmlstarlet format --indent-tab)
+			echo "$resp </pre>"
+		else
+			echo "<pre>"
+			resp=$(curl -X GET http://nodeserver:8888/forfatter/ | xmlstarlet format --indent-tab)
+			echo "$resp </pre>"
+		fi
+	
+	else
+		echo "Velg å hente data om en forfatter eller en bok. Du kan også oppdatere og slette eksisterende data! "
+		
+	fi
+
+	echo $req
+	
 fi
+
 
 if [ "$REQUEST_METHOD" = "POST" ]; then
   if [ "$CONTENT_LENGTH" -gt 0 ]; then
@@ -146,3 +127,7 @@ else
 	echo "Tabell er: $tabell"
 	echo "</body></html>"
 fi
+
+echo "</center></body></html>"
+
+
