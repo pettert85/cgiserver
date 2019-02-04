@@ -20,6 +20,24 @@ cat << EOF
 			<input type="text" placeholder="ID" name="forfatterID">
 			<input type="submit" value="Hent en" name="en">
 			<input type="submit" value="Hent alle" name="alle">
+			</form></td>
+		<td>
+			Hent en bok: <form method="get">
+			<input type="text" placeholder="ID" name="bokID">
+			<input type="submit" value="Hent en" name="en">
+			<input type="submit" value="Hent alle" name="alle">
+			</form></td>
+			
+</tr>
+<tr>
+		<td>
+			 Endre/legg til/slett forfatter: <form method="post">
+			<input type="text" placeholder="Fornavn" name="fornavn">
+			<input type="text" placeholder="Etternavn" name="etternavn">
+			<input type="text" placeholder="NOR" name="najonalitet">
+			<input type="submit" value="Legg til" name="POST">
+			<input type="submit" value="Endre" name="PUT">
+			<input type="submit" value="Slett" name="DELETE">
 			</form></td></tr>
 
 </table>
@@ -45,8 +63,22 @@ then
 			resp=$(curl -X GET http://nodeserver:8888/forfatter/ | xmlstarlet format --indent-tab)
 			echo "$resp </pre>"
 		fi
+	if [ $type == bokID ]
+	then
+		echo "Type: $type og mengde: $mengde ID: $id" 
+		if [ $mengde == en ]
+		then
+			echo "<pre>"
+			resp=$(curl -X GET http://nodeserver:8888/bok/$id | xmlstarlet format --indent-tab)
+			echo "$resp </pre>"
+		else
+			echo "<pre>"
+			resp=$(curl -X GET http://nodeserver:8888/bok/ | xmlstarlet format --indent-tab)
+			echo "$resp </pre>"
+		fi
 	
-	else
+			
+else
 		echo "Velg å hente data om en forfatter eller en bok. Du kan også oppdatere og slette eksisterende data! "
 		
 	fi
@@ -61,71 +93,52 @@ if [ "$REQUEST_METHOD" = "POST" ]; then
       read -n $CONTENT_LENGTH POST_DATA <&0
   fi
 fi
-
+echo $POST_DATA
 #IFS='&'
 #set -- $POST_DATA
-tabell=$(echo $POST_DATA | cut -d'&' -f4)
-
-if [[ $tabell == *"forfatter"* && $POST_DATA == *"add=legg+til"* ]];
+#tabell=$(echo $POST_DATA | cut -d'&' -f1)
+#echo $tabell
+if [[ $POST_DATA == *"fornavn"* && $POST_DATA == *"POST"*  ]];
 then
 	fnavn=$(echo $POST_DATA | cut -d'&' -f1)
 	enavn=$(echo $POST_DATA | cut -d'&' -f2)
 	nasjonalitet=$(echo $POST_DATA | cut -d'&' -f3)
-	xml=""
-	echo "Content-type: text/html"
-	echo ""
-	echo "<html><head><title>Legg til forfatter</title>"
-	echo "<link rel="stylesheet" type="text/css" href="http://bp/styles.css">"
-	echo "</head><body>"
+	httpMethod=$(echo $POST_DATA | cut -d'&' -f4 | cut -d'=')
+	xml=$(echo "<forfatterliste><forfatter><fornavn>$fnavn</fornavn> \
+	<etternavn>$enavn</etternavn><nasjonalitet>$nasjonalitet</nasjonalitet> \
+	</forfatter></forfatterliste>")
 	echo "Data received: $POST_DATA</br>"
-	echo "XML: <xml Id = Forfatter add><root>"
-	echo "<forfatter>"
-	echo "<fnavn>$fnavn</fnavn><enavn>$enavn</enavn><nat>$nasjonalitet</nat></forfatter></root></xml></br>"
+	echo "XML: $xml"
 	echo "Tabell er: $tabell</br>"
 	echo "Fornavn: $fnavn</br>"
         echo "Etternavn: $enavn</br>"
         echo "Nasjonalitet: $nasjonalitet</br>"
-	echo "</body></html>"
 
-elif [[ $tabell == *"forfatter"* && $POST_DATA == *"update=Endre"* ]];
+
+elif [[ $POST_DATA == *"forfatter"* && $POST_DATA == *"update=Endre"* ]];
 then
-	echo "Content-type: text/html"
-	echo ""
-	echo "<html><head><title>Endre en forfatter</title>"
-	echo "<link rel="stylesheet" type="text/css" href="http://bp/styles.css">"
-	echo"</head><body>"
 	echo "Data received: $POST_DATA"
 	echo "Tabell er: $tabell</br>"
 	echo "Fornavn: $fnavn</br>"
         echo "Etternavn: $enavn</br>"
         echo "Nasjonalitet: $nasjonalitet</br>"
-	echo "</body></html>"
 
-elif [[ $tabell == *"forfatter"* && $POST_DATA == *"delete=Slette"* ]];
+
+elif [[ $POST_DATA == *"forfatter"* && $POST_DATA == *"delete=Slette"* ]];
 then
-	echo "Content-type: text/html"
-	echo ""
-	echo "<html><head><title>Slette en forfatter</title>"
-	echo "<link rel="stylesheet" type="text/css" href="http://bp/styles.css">"
-	echo"</head><body>"
 	echo "Data received: $POST_DATA"
 	echo "Tabell er: $tabell</br>"
 	echo "Fornavn: $fnavn</br>"
         echo "Etternavn: $enavn</br>"
         echo "Nasjonalitet: $nasjonalitet</br>"
-	echo "</body></html>"
 
 
-else
-        echo "Content-type: text/html"
-	echo ""
-	echo "<html><head><title>Bok</title>"
-	echo "<link rel="stylesheet" type="text/css" href="http://bp/styles.css">"
-	echo "</head><body>"
+
+elif [[ $POST_DATA == *"bok"* && $POST_DATA == *"update=Endre"* ]];
+then
 	echo "Data received: $POST_DATA"
 	echo "Dette skal vaere bok"
 	echo "Tabell er: $tabell"
-	echo "</body></html>"
 fi
 
 echo "</center></body></html>"
