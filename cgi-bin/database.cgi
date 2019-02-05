@@ -11,7 +11,25 @@ cat << EOF
 
 <body bgcolor="556B2F">
 <center>
-<h1>SQLITE DATABASE!</h1>
+<h1>Siden med det rare i!</h1>
+
+<form method="post">
+<table width="100%">
+	<tr>
+		<td align="right">Brukernavn:</td>
+		<td align="right" width="30px"><form method="post"><input type"text" name="bruker" width="30px"></td>
+
+	<tr>
+		<td align="right">Passord:</td>
+		<td align="right width="30px""><input type="text" name="pass" width="30px"></form></td>
+	</tr>
+
+	<tr>
+		<td align="right">&nbsp;</td>
+		<td align="right width="30px"><input type="submit" name="POST" value="Login"></td>
+	</tr>
+</table></form>
+
 
 <table id="para" cellspacing="20">
 	<tr>
@@ -116,6 +134,10 @@ then
 	bId=$(echo $POST_DATA | cut -d'&' -f1 | cut -d'=' -f2)
 	tittel=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2)
 	fId=$(echo $POST_DATA | cut -d'&' -f3 | cut -d'=' -f2)
+
+elif [[ $POST_DATA == *"pass"* ]];
+then
+	echo $POST_DATA
 fi
 
 
