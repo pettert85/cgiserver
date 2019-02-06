@@ -137,7 +137,8 @@ then
 
 elif [[ $POST_DATA == *"pass"* ]];
 then
-	echo $POST_DATA
+	bNavn=$(echo $POST_DATA | cut -d'&' -f1 | cut -d '=' -f2)
+	pass=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2 | md5sum | cut -d'-' -f1)
 fi
 
 
@@ -148,6 +149,14 @@ then
 
 	resp=$(curl -X POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
 	echo $resp
+
+elif [[ $POST_DATA == *"pass"* && $POST_DATA == *"POST"* ]];
+then
+	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><login><brukernavn>$bNavn</brukernavn>\
+<passord>$pass</passord></login>")
+	resp=$(curl -X POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/)
+	echo $resp
+
 
 elif [[ $POST_DATA == *"fornavn"* && $POST_DATA == *"PUT"* ]];
 then
