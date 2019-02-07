@@ -26,7 +26,9 @@ cat << EOF
 
 	<tr>
 		<td align="right">&nbsp;</td>
-		<td align="right width="30px"><input type="submit" name="POST" value="Login"></td>
+		<td align="right width="30px">
+			<input type="submit" name="POST" value="Login">
+			<input type="submit" name="POST" value="Logout"></td>
 	</tr>
 </table></form>
 
