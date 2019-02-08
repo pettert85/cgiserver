@@ -1,6 +1,15 @@
 #!/bin/bash
-echo "Content-type:text/html;charset=utf-8"
-echo
+
+if [ -z "$kake" ];
+then	
+	echo "Content-type:text/html;charset=utf-8"
+	echo
+
+else
+	echo "Set-cookie:$kake"
+	echo "Content-type:text/html;charset=utf-8"
+	echo
+fi
 
 cat << EOF
 <html>
@@ -17,7 +26,7 @@ cat << EOF
 <table width="100%">
 	<tr>
 		<td align="right">Brukernavn:</td>
-		<td align="right" width="30px"><form method="post"><input type"text" name="bruker" width="30px"></td>
+		<td align="right" width="30px"><form method="post" target=”_blank”><input type"text" name="bruker" width="30px"></td>
 
 	<tr>
 		<td align="right">Passord:</td>
@@ -156,16 +165,18 @@ elif [[ $POST_DATA == *"pass"* && $POST_DATA == *"POST"* ]];
 then
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><login><brukernavn>$bNavn</brukernavn>\
 <passord>$pass</passord></login>")
-	resp=$(curl -X POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/)
+	resp=$(curl -X -L POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/)
 	echo $resp
-
+	
+	kake=$(echo "kaken=2")
+	echo $kake
 
 elif [[ $POST_DATA == *"fornavn"* && $POST_DATA == *"PUT"* ]];
 then
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><forfatter><forfatterID>$fId</forfatterID>\
 <fornavn>$fnavn</fornavn><etternavn>$enavn</etternavn><nasjonalitet>$nasjonalitet</nasjonalitet></forfatter>")
 
-	resp=$(curl -X PUT -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
+	resp=$(curl -X  PUT -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
 	echo $resp
 
 
