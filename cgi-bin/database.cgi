@@ -19,8 +19,15 @@ then
 	#kake=$(echo $resp | cut -d":" -f3)
 	echo "Set-cookie:$resp"
 	echo "Content-type:text/html;charset=utf-8"
-	echo	
+	echo
 
+elif [[ $POST_DATA == *"Logout"* ]];
+then
+	sessionID=$(echo $HTTP_COOKIE | cut -d"=" -f2)
+	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><logout><sessionID>$sessionID</sessionID></logout>")
+	resp=$(curl -X POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/logout)
+	echo "Content-type:text/html;charset=utf-8"
+	echo
 else
 	echo "Content-type:text/html;charset=utf-8"
 	echo
@@ -96,7 +103,7 @@ cat << EOF
 
 </table>
 EOF
-echo $resp
+
 if [ $REQUEST_METHOD == GET ]
 then	
 	type=$(echo $QUERY_STRING | cut -d "=" -f1)
@@ -141,13 +148,6 @@ then
 fi
 
 
-if [ "$REQUEST_METHOD" = "POST" ]; then
-  if [ "$CONTENT_LENGTH" -gt 0 ]; then
-      read -n $CONTENT_LENGTH POST_DATA <&0
-  fi
-fi
-
-
 if [[ $POST_DATA == *"fornavn"* ]];
 then
 	fId=$(echo $POST_DATA | cut -d'&' -f1 | cut -d'=' -f2)
@@ -161,13 +161,16 @@ then
 	tittel=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2)
 	fId=$(echo $POST_DATA | cut -d'&' -f3 | cut -d'=' -f2)
 
+fi
+
 
 if [[ $POST_DATA == *"fornavn"* && $POST_DATA == *"POST"* ]];
 then
+	echo $HTTP_COOKIE
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><forfatter><forfatterID>$fId</forfatterID>\
 <fornavn>$fnavn</fornavn><etternavn>$enavn</etternavn><nasjonalitet>$nasjonalitet</nasjonalitet></forfatter>")
 
-	resp=$(curl -X POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
+	resp=$(curl -X POST --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
 	echo $resp
 
 
