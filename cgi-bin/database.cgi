@@ -1,24 +1,27 @@
 #!/bin/bash
 
-if [ $POST_DATA == *"Login"* ];
+if [ "$REQUEST_METHOD" = "POST" ]; then
+  if [ "$CONTENT_LENGTH" -gt 0 ]; then
+      read -n $CONTENT_LENGTH POST_DATA <&0
+  fi
+fi
+
+
+if [[ $POST_DATA == *"Login"* ]];
 then
+	bNavn=$(echo $POST_DATA | cut -d'&' -f1 | cut -d '=' -f2)
+	pass=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2 | md5sum | cut -d'-' -f1)
 
-	if [[ $POST_DATA == *"Login"* && $POST_DATA == *"POST"* ]];
-then
-#	bNavn=$(echo $POST_DATA | cut -d'&' -f1 | cut -d '=' -f2)
-#	pass=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2 | md5sum | cut -d'-' -f1)
+	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><login><brukernavn>$bNavn</brukernavn>\
+<passord>$pass</passord></login>")
 
-#	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><login><brukernavn>$bNavn</brukernavn>\
-#<passord>$pass</passord></login>")
-
-#	resp=$(curl -X -i POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/)
-#	kake=$(echo $resp | grep Cookie | cut -d";" -f1 | cut -d":" -f2 | cut -d" " -f2)
-	echo "Set-cookie:Kake=PASS"
+	resp=$(curl -X -i POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/)
+	kake=$(echo $resp | grep Cookie | cut -d";" -f1 | cut -d":" -f2 | cut -d" " -f2)
+	echo "Set-cookie:$kake"
 	echo "Content-type:text/html;charset=utf-8"
-	echo
-	fi
+	echo	
+
 else
-	echo "Set-cookie:Kake=21"
 	echo "Content-type:text/html;charset=utf-8"
 	echo
 fi
