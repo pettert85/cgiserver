@@ -52,7 +52,7 @@ cat << EOF
 
 	<tr>
 		<td align="right">Passord:</td>
-		<td align="right width="30px""><input type="text" name="pass" width="30px"></form></td>
+		<td align="right width="30px""><input type="password" name="pass" width="30px"></form></td>
 	</tr>
 
 	<tr>
@@ -179,7 +179,7 @@ then
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><forfatter><forfatterID>$fId</forfatterID>\
 <fornavn>$fnavn</fornavn><etternavn>$enavn</etternavn><nasjonalitet>$nasjonalitet</nasjonalitet></forfatter>")
 
-	resp=$(curl -X  PUT -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
+	resp=$(curl -X PUT --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
 	echo $resp
 
 
@@ -188,7 +188,7 @@ then
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><forfatter><forfatterID>$fId</forfatterID>\
 <fornavn>$fnavn</fornavn><etternavn>$enavn</etternavn><nasjonalitet>$nasjonalitet</nasjonalitet></forfatter>")
 
-	resp=$(curl -X DELETE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
+	resp=$(curl -X DELETE --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
 	echo $resp
 
 
@@ -197,7 +197,7 @@ then
 	xml=$(echo "<bok><bokID>$bId</bokID><tittel>$tittel</tittel>\
 <forfatterID>$fId</forfatterID></bok>")
 
-	resp=$(curl -X POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/bok/$bId)
+	resp=$(curl -X POST --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/bok/$bId)
 	echo $resp
 
 
@@ -206,7 +206,7 @@ then
 	xml=$(echo "<bok><bokID>$bId</bokID><tittel>$tittel</tittel>\
 <forfatterID>$fId</forfatterID></bok>")
 
-	resp=$(curl -X PUT -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/bok/$bId)
+	resp=$(curl -X PUT --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/bok/$bId)
 	echo $resp
 
 elif [[ $POST_DATA == *"tittel"* && $POST_DATA == *"DELETE"* ]];
@@ -214,7 +214,7 @@ then
 	xml=$(echo "<bok><bokID>$bId</bokID><tittel>$tittel</tittel>\
 <forfatterID>$fId</forfatterID></bok>")
 
-	resp=$(curl -X DELETE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/bok/$bId)
+	resp=$(curl -X DELETE --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/bok/$bId)
 	echo $resp
 fi
 
