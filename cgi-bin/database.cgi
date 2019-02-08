@@ -15,9 +15,9 @@ then
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><login><brukernavn>$bNavn</brukernavn>\
 <passord>$pass</passord></login>")
 
-	resp=$(curl -X -i POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/)
-	kake=$(echo $resp | grep Cookie | cut -d";" -f1 | cut -d":" -f2 | cut -d" " -f2)
-	echo "Set-cookie:$kake"
+	resp=$(curl -X POST -i -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/ | grep Cookie | cut -d":" -f2 | cut -d";" -f1)
+	#kake=$(echo $resp | cut -d":" -f3)
+	echo "Set-cookie:$resp"
 	echo "Content-type:text/html;charset=utf-8"
 	echo	
 
@@ -96,7 +96,7 @@ cat << EOF
 
 </table>
 EOF
-echo $kake
+echo $resp
 if [ $REQUEST_METHOD == GET ]
 then	
 	type=$(echo $QUERY_STRING | cut -d "=" -f1)
