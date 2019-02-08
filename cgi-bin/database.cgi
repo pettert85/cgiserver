@@ -1,12 +1,24 @@
 #!/bin/bash
 
-if [ -z "$kake" ];
-then	
+if [ $POST_DATA == *"Login"* ];
+then
+
+	if [[ $POST_DATA == *"Login"* && $POST_DATA == *"POST"* ]];
+then
+#	bNavn=$(echo $POST_DATA | cut -d'&' -f1 | cut -d '=' -f2)
+#	pass=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2 | md5sum | cut -d'-' -f1)
+
+#	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><login><brukernavn>$bNavn</brukernavn>\
+#<passord>$pass</passord></login>")
+
+#	resp=$(curl -X -i POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/)
+#	kake=$(echo $resp | grep Cookie | cut -d";" -f1 | cut -d":" -f2 | cut -d" " -f2)
+	echo "Set-cookie:Kake=PASS"
 	echo "Content-type:text/html;charset=utf-8"
 	echo
-
+	fi
 else
-	echo "Set-cookie:$kake"
+	echo "Set-cookie:Kake=21"
 	echo "Content-type:text/html;charset=utf-8"
 	echo
 fi
@@ -81,7 +93,7 @@ cat << EOF
 
 </table>
 EOF
-
+echo $kake
 if [ $REQUEST_METHOD == GET ]
 then	
 	type=$(echo $QUERY_STRING | cut -d "=" -f1)
@@ -146,12 +158,6 @@ then
 	tittel=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2)
 	fId=$(echo $POST_DATA | cut -d'&' -f3 | cut -d'=' -f2)
 
-elif [[ $POST_DATA == *"pass"* ]];
-then
-	bNavn=$(echo $POST_DATA | cut -d'&' -f1 | cut -d '=' -f2)
-	pass=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2 | md5sum | cut -d'-' -f1)
-fi
-
 
 if [[ $POST_DATA == *"fornavn"* && $POST_DATA == *"POST"* ]];
 then
@@ -161,15 +167,6 @@ then
 	resp=$(curl -X POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
 	echo $resp
 
-elif [[ $POST_DATA == *"pass"* && $POST_DATA == *"POST"* ]];
-then
-	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><login><brukernavn>$bNavn</brukernavn>\
-<passord>$pass</passord></login>")
-	resp=$(curl -X -L POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/)
-	echo $resp
-	
-	kake=$(echo "kaken=2")
-	echo $kake
 
 elif [[ $POST_DATA == *"fornavn"* && $POST_DATA == *"PUT"* ]];
 then
