@@ -17,6 +17,8 @@ then
 
 	resp=$(curl -X POST -i -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/ | grep Cookie | cut -d":" -f2 | cut -d";" -f1)
 	#kake=$(echo $resp | cut -d":" -f3)
+	LOGINMSG="Velkommen $bNavn!"
+
 	echo "Set-cookie:$resp"
 	echo "Content-type:text/html;charset=utf-8"
 	echo
@@ -25,7 +27,7 @@ elif [[ $POST_DATA == *"Logout"* ]];
 then
 	sessionID=$(echo $HTTP_COOKIE | cut -d"=" -f2)
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><logout><sessionID>$sessionID</sessionID></logout>")
-	resp=$(curl -X POST -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/logout)
+	LOGOUTMSG=$(curl -X POST --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/logout)
 	echo "Content-type:text/html;charset=utf-8"
 	echo
 else
@@ -90,6 +92,7 @@ cat << EOF
 			<input type="submit" value="Legg til" name="POST">
 			<input type="submit" value="Endre" name="PUT">
 			<input type="submit" value="Slett" name="DELETE">
+			<input type="submit" value="Slett alle" name="DELETEALL">
 			</form></td>
 <td>
 			Legg til/endre/slett bok: <form method="post">
@@ -99,6 +102,7 @@ cat << EOF
 			<input type="submit" value="Legg til" name="POST">
 			<input type="submit" value="Endre" name="PUT">
 			<input type="submit" value="Slett" name="DELETE">
+			<input type="submit" value="Slett alle" name="DELETEALL">
 </td></tr>
 
 </table>
@@ -166,7 +170,7 @@ fi
 
 if [[ $POST_DATA == *"fornavn"* && $POST_DATA == *"POST"* ]];
 then
-	echo $HTTP_COOKIE
+
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><forfatter><forfatterID>$fId</forfatterID>\
 <fornavn>$fnavn</fornavn><etternavn>$enavn</etternavn><nasjonalitet>$nasjonalitet</nasjonalitet></forfatter>")
 
@@ -191,6 +195,10 @@ then
 	resp=$(curl -X DELETE --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/forfatter/$fId)
 	echo $resp
 
+elif [[ $POST_DATA == *"fornavn"* && $POST_DATA == *"DELETEALL"* ]];
+then
+	resp=$(curl -X DELETE --cookie $HTTP_COOKIE -H "Content-Type: text/xml" http://nodeserver:8888/forfatter)
+	echo $resp
 
 elif [[ $POST_DATA == *"tittel"* && $POST_DATA == *"POST"* ]];
 then
@@ -216,9 +224,21 @@ then
 
 	resp=$(curl -X DELETE --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/bok/$bId)
 	echo $resp
+
+elif [[ $POST_DATA == *"tittel"* && $POST_DATA == *"DELETEALL"* ]];
+then
+	resp=$(curl -X DELETE --cookie $HTTP_COOKIE -H "Content-Type: text/xml" http://nodeserver:8888/bok)
+	echo $resp
+
+elif [[ $POST_DATA == *"Login"* ]];
+then
+	echo $LOGINMSG "
+
+elif [[ $POST_DATA == *"Logout"* ]];
+then
+	echo $LOGOUTMSG
+
 fi
-
-
 echo "</center></body></html>"
 
 
