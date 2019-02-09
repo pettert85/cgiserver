@@ -232,7 +232,7 @@ then
 
 elif [[ $POST_DATA == *"Login"* ]];
 then
-	echo $LOGINMSG "
+	echo $LOGINMSG
 
 elif [[ $POST_DATA == *"Logout"* ]];
 then
