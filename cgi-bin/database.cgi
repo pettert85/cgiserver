@@ -27,7 +27,7 @@ elif [[ $POST_DATA == *"Logout"* ]];
 then
 	sessionID=$(echo $HTTP_COOKIE | cut -d"=" -f2)
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><logout><sessionID>$sessionID</sessionID></logout>")
-	LOGOUTMSG=$(curl -X POST --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/logout)
+	LOGOUTMSG=$(curl -X GET --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/logout)
 	echo "Content-type:text/html;charset=utf-8"
 	echo
 else
