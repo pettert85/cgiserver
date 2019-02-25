@@ -15,19 +15,31 @@ then
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><login><brukernavn>$bNavn</brukernavn>\
 <passord>$pass</passord></login>")
 
-	resp=$(curl -X POST -i -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/ | grep Cookie | cut -d":" -f2 | cut -d";" -f1)
-	#kake=$(echo $resp | cut -d":" -f3)
-	LOGINMSG="Velkommen $bNavn!"
+	resp=$(curl -X POST -i -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/)
+	statusMessage=$(echo $resp | cut -d"<" -f6 | cut -d">" -f2)
+	status=$(echo $resp | cut -d"<" -f4 | cut -d">" -f2)
+	kake=$(echo $resp | cut -d":" -f7 | cut -d";" -f1 | cut -d" " -f2)
+	
+	if [[ $status == "true" ]];
+	then
+		LOGINMSG="Velkommen $bNavn!"
 
-	echo "Set-cookie:$resp"
-	echo "Content-type:text/html;charset=utf-8"
-	echo
+		echo "Set-cookie:$kake"
+		echo "Content-type:text/html;charset=utf-8"
+		echo
+
+	else
+		LOGINMSG=$statusMessage
+		echo "Content-type:text/html;charset=utf-8"
+		echo
+	fi
 
 elif [[ $POST_DATA == *"Logout"* ]];
 then
 	sessionID=$(echo $HTTP_COOKIE | cut -d"=" -f2)
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><logout><sessionID>$sessionID</sessionID></logout>")
-	LOGOUTMSG=$(curl -X GET --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/logout)
+	resp=$(curl -X GET --cookie $HTTP_COOKIE -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/logout)
+	LOGOUTMSG="Velkommen igjen!"
 	echo "Content-type:text/html;charset=utf-8"
 	echo
 else
@@ -59,7 +71,7 @@ cat << EOF
 
 	<tr>
 		<td align="right">&nbsp;</td>
-		<td align="right width="30px">
+		<td align="right" width="30px">
 			<input type="submit" name="POST" value="Login">
 			<input type="submit" name="POST" value="Logout"></td>
 	</tr>
