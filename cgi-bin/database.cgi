@@ -1,5 +1,5 @@
 #!/bin/bash
-
+LC_CTYPE="no_NO.UTF8"
 if [ "$REQUEST_METHOD" = "POST" ]; then
   if [ "$CONTENT_LENGTH" -gt 0 ]; then
       read -n $CONTENT_LENGTH POST_DATA <&0
@@ -10,12 +10,12 @@ fi
 if [[ $POST_DATA == *"Login"* ]];
 then
 	bNavn=$(echo $POST_DATA | cut -d'&' -f1 | cut -d '=' -f2)
-	pass=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2 | md5sum | cut -d'-' -f1)
+	pass=$(echo $POST_DATA | cut -d'&' -f2 | cut -d'=' -f2)
 
 	xml=$(echo "<?xml version="1.0" encoding="UTF-8"?><login><brukernavn>$bNavn</brukernavn>\
 <passord>$pass</passord></login>")
 
-	resp=$(curl -X POST -i -H "Content-Type: text/xml" -d "$xml" http://nodeserver:8888/login/)
+	resp=$(curl -X POST -i -H "Content-Type: text/xml; charset=ISO-8859-1" -d "$xml" http://nodeserver:8888/login/)
 	statusMessage=$(echo $resp | cut -d"<" -f6 | cut -d">" -f2)
 	status=$(echo $resp | cut -d"<" -f4 | cut -d">" -f2)
 	kake=$(echo $resp | cut -d":" -f7 | cut -d";" -f1 | cut -d" " -f2)
