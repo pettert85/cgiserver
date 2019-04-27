@@ -1,2 +1,3 @@
 # cgiserver
-A docker running a apache cgi server for a school project
+**A docker container running an apache server configured for cgi, made for a school assignement.**
+
