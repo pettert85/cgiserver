@@ -1,6 +1,6 @@
 # cgiserver
 
-**This is a docker container running an apache server configured for cgi, and was made for a school assignement.**
+**This is a CGI Script, running on an apache server configured for cgi scripts in DOCKER. It was made for a school assignement.**
 
 * Most of the work here was done in the CGI-file "cgi-bin/database.cgi". 
 
